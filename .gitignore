@@ -2,3 +2,13 @@
 .DS_Store
 wireframes/.DS_Store
 wireframes/mobile/.DS_Store
+.idea/
+*.pyc
+*.pyo
+*.swp
+*.swo
+*.swn
+.sass-cache
+*.css.map
+.DS_Store
+.idea
