@@ -38,6 +38,8 @@ class Bill(models.Model):
     date = models.CharField(null=True, default="", blank=True, max_length=25)
     total_amount = models.IntegerField(null=True, blank=True)
     bill_type = models.CharField(choices=BILL_TYPE_CHOICES, max_length=30)
+    storage_link = models.UUIDField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'User Bill Detail'

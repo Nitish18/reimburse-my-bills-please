@@ -6,8 +6,8 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_2
     HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserDetailSerializer
-from .models import UserDetail
+from .serializers import UserDetailSerializer, BillSerializer
+from .models import UserDetail, Bill
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class UserDetailView(APIView):
                     'data': serializer.validated_data
                 }, status=HTTP_201_CREATED)
             return Response({
-                'message': "LOL",
+                'message': "error",
             }, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({
@@ -63,6 +63,71 @@ class EachUserDetailView(APIView):
         user_detail_obj = UserDetail.objects.filter(id=id).first()
         data = request.data
         serializer = UserDetailSerializer(user_detail_obj, data=data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message': "success",
+                'data': serializer.data
+            }, status=HTTP_200_OK)
+        return Response({
+            'message': serializer.errors}, status=HTTP_400_BAD_REQUEST
+        )
+
+
+class BillView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        user = request.user
+        all_user_bills = Bill.objects.filter(user=user, is_active=True)
+        return Response({
+            'message': "success",
+            'data': BillSerializer(all_user_bills, many=True).data
+        }, HTTP_200_OK)
+
+    def post(self, request):
+        try:
+            data = request.data
+            # getting user info
+            user = request.user
+            if not user:
+                return Response({
+                    'message': "User info not provided",
+                }, status=HTTP_400_BAD_REQUEST)
+
+            serializer = BillSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'message': "success",
+                    'data': serializer.validated_data
+                }, status=HTTP_201_CREATED)
+            return Response({
+                'message': "error",
+            }, status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                'message': str(e),
+            }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class EachBillView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, id):
+        bill_detail = Bill.objects.filter(id=id).first()
+        return Response({
+            'message': "success",
+            'data': BillSerializer(bill_detail).data
+        }, HTTP_200_OK)
+
+    def patch(self, request, id):
+        """
+        """
+        bill_detail = Bill.objects.filter(id=id).first()
+        data = request.data
+        serializer = BillSerializer(bill_detail, data=data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
