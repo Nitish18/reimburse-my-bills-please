@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-qw7rwbwpuhkm)_6)xdnan0cgwfmx^6ppg!3%zhmb6yeinkc%js
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -138,4 +139,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+}
+
+JWT_AUTH = {
+'JWT_ENCODE_HANDLER': 'rest_framework_jwt.utils.jwt_encode_handler',
+'JWT_DECODE_HANDLER': 'rest_framework_jwt.utils.jwt_decode_handler',
+'JWT_PAYLOAD_HANDLER': 'rest_framework_jwt.utils.jwt_payload_handler',
+'JWT_PAYLOAD_GET_USER_ID_HANDLER': 'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+'JWT_EXPIRATION_DELTA': datetime.timedelta(days=10),
 }
